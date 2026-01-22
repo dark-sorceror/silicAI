@@ -1,17 +1,21 @@
 import os
+from dotenv import load_dotenv
 from langchain_community.chat_models import ChatOllama
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 
+load_dotenv()
+
 PDF_PATH = "RM-MPU-9250A-00-v1.6.pdf"
-MODEL_NAME = "phi3"
 
 print(f"Loading {PDF_PATH}...")
 
 loader = PyPDFLoader(PDF_PATH)
 docs = loader.load()
+
 print(f"Loaded {len(docs)} pages.")
 
 text_splitter = RecursiveCharacterTextSplitter(
@@ -31,7 +35,10 @@ vectorstore = Chroma.from_documents(
 )
 retriever = vectorstore.as_retriever()
 
-llm = ChatOllama(model = MODEL_NAME, temperature = 0)
+llm = ChatGoogleGenerativeAI(
+    model = "gemini-2.5-flash",
+    temperature = 0,
+)
 
 while True:
     query = input("\nAsk a question about the datasheet: ")
