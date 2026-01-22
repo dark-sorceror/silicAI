@@ -1,15 +1,15 @@
-import os
+from pathlib import Path
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatOllama
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+
 from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.document_loaders import PyPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
-PDF_PATH = "RM-MPU-9250A-00-v1.6.pdf"
+PDF_PATH = Path("../media/RM-MPU-9250A-00-v1.6.pdf")
 
 print(f"Loading {PDF_PATH}...")
 
