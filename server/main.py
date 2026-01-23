@@ -11,20 +11,14 @@ load_dotenv()
 
 PDF_PATH = Path("../media/RM-MPU-9250A-00-v1.6.pdf")
 
-print(f"Loading {PDF_PATH}...")
-
 loader = PyPDFLoader(PDF_PATH)
 docs = loader.load()
-
-print(f"Loaded {len(docs)} pages.")
 
 text_splitter = RecursiveCharacterTextSplitter(
     chunk_size = 1000, 
     chunk_overlap = 200
 )
 splits = text_splitter.split_documents(docs)
-
-print(len(splits))
 
 # https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 embedding_function = HuggingFaceEmbeddings(model_name = "all-MiniLM-L6-v2")
@@ -40,12 +34,7 @@ llm = ChatGoogleGenerativeAI(
     temperature = 0,
 )
 
-while True:
-    query = input("\nAsk a question about the datasheet: ")
-    
-    if query.lower() == "exit":
-        break
-
+def gemini_chat(query: str) -> None:
     relevant_docs = retriever.invoke(query)
 
     context_text = ""
@@ -66,8 +55,7 @@ while True:
     """
 
     full_prompt = f"{system_prompt}\n\nQuestion: {query}"
-
-    for chunk in llm.stream(full_prompt):
-        print(chunk.content, end = "", flush = True)
-        
-    print(f"\n\n[Sources: Pages {', '.join(map(str, sources))}]")
+    
+    response = llm.invoke(full_prompt).content
+    
+    return [response, sources]
